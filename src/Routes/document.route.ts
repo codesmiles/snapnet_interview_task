@@ -10,6 +10,4 @@ routes.post("/", uploadDocument as Application);
 routes.get("/:id", getDocument as Application);
 
 
-// routes.get("/profile", verifyUser as Application, getUserProfile as Application)
-
 export default routes;

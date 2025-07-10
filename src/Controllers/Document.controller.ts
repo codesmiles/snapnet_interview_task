@@ -1,16 +1,24 @@
 import { Response } from "express";
 import { validator, ResponseBuilder } from "../Utils";
-import { loginSchema } from "../Dtos";
 import { DocumentService } from "../Services";
 import { CustomRequest } from "../Interfaces";
+import { createDocumentSchema } from "../Dtos";
 
 const documentService = new DocumentService()
 export const uploadDocument = async (req: CustomRequest, res: Response) => {
-    // const { documentType, documentUrl } = req.body;
-    // const userId = req.user.id;
+    let successResponse: ResponseBuilder<string | object>;
+    let errorResponse: ResponseBuilder<unknown>;
 
-    // const doc = await documentService.create(userId, documentType, documentUrl);
-    // res.status(201).json(doc);
+    // validate requests
+    const validate_req_payload = validator(createDocumentSchema, req.body);
+    if (validate_req_payload) {
+        return res.status(400).json(validate_req_payload);
+    }
+    
+    const doc = await documentService.create({user:req.user.id, ...req.body });
+    successResponse = new ResponseBuilder(ResponseBuilder.SUCCESS_MESSAGE, 201, doc);
+    return res.status(201).json(successResponse.toJson());
+
 };
 
 export const getDocument = async (req: CustomRequest, res: Response) => {

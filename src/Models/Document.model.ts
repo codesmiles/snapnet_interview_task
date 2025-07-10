@@ -22,7 +22,8 @@ const UserDocumentSchema = new Schema(
         status: {
             type: String,
             required: true,
-            enum:Object.values(StatusEnum)
+            enum: Object.values(StatusEnum),
+            default: StatusEnum.PENDING,
         }
 
     },

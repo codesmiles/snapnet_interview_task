@@ -1,4 +1,11 @@
-export const uploadDocument = async (req: Request, res: Response) => {
+import { Response } from "express";
+import { validator, ResponseBuilder } from "../Utils";
+import { loginSchema } from "../Dtos";
+import { DocumentService } from "../Services";
+import { CustomRequest } from "../Interfaces";
+
+const docuementService = new DocumentService()
+export const uploadDocument = async (req: CustomRequest, res: Response) => {
     const { documentType, documentUrl } = req.body;
     const userId = req.user.id;
 

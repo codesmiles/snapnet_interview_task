@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis-server
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - app-network
+  
+  redis-commander:
+    container_name: redis_commander
+    image: rediscommander/redis-commander:latest
+    environment:
+      REDIS_HOSTS: app-network:redis:${REDIS_PORT}
+    ports:
+      - "${REDIS_UI_PORT}:8081"
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672" # management UI
+      - "5672:5672"
+
+volumes:
+  redis-data:
+
+
+networks:
+  app-network:
+    driver: bridge

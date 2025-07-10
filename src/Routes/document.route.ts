@@ -1,5 +1,5 @@
 // src/documents/document.controller.ts
-import { Request, Response } from 'express';
+import { CustomRequest } from '../Interfaces';
 // import * as documentService from './document.service';
 
 // export const uploadDocument = async (req: Request, res: Response) => {

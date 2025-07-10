@@ -1,9 +1,6 @@
 import { Response, NextFunction } from "express";
-// import { ErrorResponse } from "../Responses";
 import { checkJwt, ResponseBuilder,UserRoles} from "../Utils";
-
-import { CustomRequest,UserTokenDecrypted } from "../Interfaces";
-// import { ROUTES, UserRoles } from "./constants";
+import { CustomRequest,UserTokenDecrypted } from "../Interfaces";;
 
 
 export const verifyUser = async (

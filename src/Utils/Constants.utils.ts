@@ -9,3 +9,9 @@ export enum CrudOperationsEnum {
     DELETE = "delete",
     FINDSINGLE = "findSingle",
 }
+
+export enum StatusEnum {
+    PENDING = "PENDING",
+    VERIFIED = "VERIFIED", 
+    FAILED = "FAILED",
+}

@@ -1,14 +1,14 @@
 import amqp from "amqplib";
 // import serverConfig from "../configs/server.config";
 
-class NotificationClient {
+export class NotificationClient {
     private channel: amqp.Channel | null = null;
     private connection: amqp.Connection | null = null;
     private URI: string;
     public queue: string;
 
     constructor() {
-        this.URI = serverConfig.RABBITMQ_URL;
+        this.URI = process.env.RABBITMQ_URL as string;
         this.queue = "messages";
     }
 

@@ -15,7 +15,10 @@ export const uploadDocument = async (req: CustomRequest, res: Response) => {
         return res.status(400).json(validate_req_payload);
     }
     
-    const doc = await documentService.create({user:req.user.id, ...req.body });
+    const doc = await documentService.create({ user: req.user.id, ...req.body });
+    
+    // create a queue system to verify the document and stimulate a delay for the queue
+
     successResponse = new ResponseBuilder(ResponseBuilder.SUCCESS_MESSAGE, 201, doc);
     return res.status(201).json(successResponse.toJson());
 

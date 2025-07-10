@@ -1,11 +1,18 @@
 import { Model, UpdateQuery, FilterQuery, Schema, Document, PopulateOptions } from "mongoose";
 import { CrudOperationsEnum } from "../Utils";
+import { PaginatedResponse } from "../Interfaces";
 
 abstract class BaseAbstract<T, I> {
   abstract create(payload: T): Promise<I>;
   abstract update(query: object, payload: UpdateQuery<I>): Promise<I | null>;
   abstract delete(id: string): Promise<void>;
   abstract findSingle(payload: object, options?: { projection?: object }): Promise<I | null>;
+  abstract getAll(queries: {
+    page: number;
+    pageSize: number;
+    queries: object;
+    search?: string;
+  }, options?: { populate?: string[] }): Promise<PaginatedResponse<I>>;
 }
 
 // Create a type instead of an interface
@@ -128,4 +135,72 @@ export default class BaseService<T, I> extends BaseAbstract<T, I> {
 
     await this.Model.findByIdAndDelete(id);
   }
+
+  /**
+  * Retrieves all documents from the database with optional pagination and search.
+  * @param {object} queries - The query parameters for pagination and search.
+  * @returns {Promise<PaginatedResponse<I>>} - The paginated response containing the documents.
+  */
+  async getAll(queries: { page?: number; pageSize?: number; queries?: object; search?: string; }, options?: { populate?: string[] }): Promise<PaginatedResponse<I>> {
+    if (!this.allowedOperations.includes(CrudOperationsEnum.GETALL)) {
+      notAllowedMsg(CrudOperationsEnum.GETALL);
+    }
+
+    console.log("Filtered Fields", this.serializer);
+
+    const page = Number(queries.page) || 1;
+    const pageSize = Number(queries.pageSize) || 5;
+    const mongoFilters: MongoFilters<I> = { ...queries.queries };
+
+    const skip = (page - 1) * pageSize;
+    const total = await this.Model.countDocuments({ isDeleted: false, ...mongoFilters });
+
+    // Only add text search if search query is provided and is not empty
+    const isTextSearch = Boolean(queries.search);
+    if (isTextSearch && queries.search) { // Add extra check for TypeScript
+      mongoFilters.$text = { $search: queries.search };
+    }
+
+    // Build projection object for select()
+    const projection: ProjectionType = {};
+    this.serializer.forEach(field => {
+      projection[field] = 0;
+    });
+    if (isTextSearch) {
+      projection.score = { $meta: "textScore" };
+    }
+
+    const formattedQueries = {} as Record<string, MongoFilters<I | T>>;
+    for (const [key, value] of Object.entries(mongoFilters)) {
+      const schemaPath = this.Model.schema.path(key);
+      if (!schemaPath) continue; // Skip if field is not in schema
+      const isArrayField = schemaPath instanceof Schema.Types.Array || schemaPath.instance === 'Array';
+      formattedQueries[key] = isArrayField ? { $in: Array.isArray(value) ? value : [value] } : value;
+    }
+
+    let data = await this.Model.find({ isDeleted: false, ...formattedQueries })
+      .select(projection)
+      .sort(
+        isTextSearch
+          ? { score: { $meta: "textScore" } }
+          : { createdAt: "desc" }
+      )
+      .skip(skip)
+      .limit(pageSize)
+      .exec();
+
+    if (options?.populate?.length) {
+      data = await this.Model.populate(data, options.populate.map(path => ({ path, select: this.serializer.map(field => `-${field}`).join(" ") })));
+    }
+    return {
+      payload: data,
+      meta: {
+        page,
+        total,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
+  }
+
 }

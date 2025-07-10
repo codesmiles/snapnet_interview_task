@@ -3,7 +3,7 @@ export enum UserRoles {
     ADMIN = "ADMIN",
 }
 export enum CrudOperationsEnum {
-    
+    GETALL = "getAll",
     CREATE = "create",
     UPDATE = "update",
     DELETE = "delete",

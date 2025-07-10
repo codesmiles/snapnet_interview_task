@@ -1,9 +1,11 @@
+import { verifyUser } from "../Middlewares";
 import authRoute from "./auth.route";
-import { Router } from "express";
+import documentRoutes from "./document.route";
+import { Router,Application } from "express";
 
 const router = Router();
 
 router.use("/auth", authRoute);
-// app.use('/documents', documentRoutes);
+router.use('/documents', verifyUser as Application, documentRoutes);
 
 export default router;

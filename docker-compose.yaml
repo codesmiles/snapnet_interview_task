@@ -25,6 +25,9 @@ services:
     networks:
       - app-network
 
+  mongo:
+    image: mongo:6
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:

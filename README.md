@@ -29,12 +29,13 @@ To run the project, use the following command:
 ## env
 ```sh
 PORT=3006
-REDIS_HOST=localhost
+EDIS_URL=redis://redis-server:6379
 REDIS_PORT=6379
+REDIS_UI_PORT=8081
 
-CONCURRENCY=2
-REDIS_UI_PORT=5992
 MONGO_URI=mongodb://mongo:27017/documents
-REDIS_URL=redis://redis-server:6379
- RABBITMQ_URL=amqp://rabbitmq:5672
+
+RABBITMQ_URL=amqp://rabbitmq:5672
+PORT=5000
+JWT_SECRET=supersecret
 ```

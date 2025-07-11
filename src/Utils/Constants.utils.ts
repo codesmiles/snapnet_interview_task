@@ -15,3 +15,7 @@ export enum StatusEnum {
     VERIFIED = "VERIFIED", 
     FAILED = "FAILED",
 }
+
+export enum ChannelName {
+    VERIFY_DOCUMENT = 'verify_document'
+}

@@ -1,19 +1,21 @@
-import NotificationClient from './NotificationClient';
+import {NotificationClient} from './NotificationClient';
 import amqp from "amqplib"; 
 import { DocumentService } from '../Services';
+import { ChannelName } from '../Utils';
 
 const documentService = new DocumentService();
 (async () => {
-    await NotificationClient.connect();
+    const notificationClient = new NotificationClient(ChannelName.VERIFY_DOCUMENT);
+    await  notificationClient.connect();
 
-    const channel = NotificationClient['channel']; // Access the internal channel
+    const channel = notificationClient['channel']; // Access the internal channel
 
     if (!channel) {
         console.error("Channel not initialized");
         return;
     }
 
-    channel.consume(NotificationClient.queue, async (msg: amqp.Message | null) => {
+    channel.consume(notificationClient.queue, async (msg: amqp.Message | null) => {
         if (!msg) return;
 
         const { message } = JSON.parse(msg.content.toString());

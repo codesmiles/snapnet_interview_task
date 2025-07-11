@@ -1,4 +1,5 @@
 import NotificationClient from './NotificationClient';
+import amqp from "amqplib"; 
 import { DocumentService } from '../Services';
 
 const documentService = new DocumentService();
@@ -12,7 +13,7 @@ const documentService = new DocumentService();
         return;
     }
 
-    channel.consume(NotificationClient.queue, async (msg) => {
+    channel.consume(NotificationClient.queue, async (msg: amqp.Message | null) => {
         if (!msg) return;
 
         const { message } = JSON.parse(msg.content.toString());

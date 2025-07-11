@@ -1,5 +1,4 @@
 import amqp from "amqplib";
-// import serverConfig from "../configs/server.config";
 
 export class NotificationClient {
     private channel: amqp.Channel | null = null;
@@ -45,5 +44,3 @@ export class NotificationClient {
         }
     }
 }
-
-export default new NotificationClient();

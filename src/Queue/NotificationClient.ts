@@ -1,9 +1,8 @@
-import amqp from "amqplib";
-// import serverConfig from "../configs/server.config";
+import amqplib, { Connection, Channel } from "amqplib";
 
 export class NotificationClient {
-    private channel: amqp.Channel | null = null;
-    private connection: amqp.Connection | null = null;
+    private channel: Channel | null = null;
+    private connection: Connection | null = null;
     private URI: string;
     public queue: string;
 
@@ -12,13 +11,11 @@ export class NotificationClient {
         this.queue = queue;
     }
 
-    // Connect to RabbitMQ server and create a channel
     public async connect() {
         try {
-            this.connection = await amqp.connect(this.URI);
-            this.channel = await this.connection.createChannel();
+            this.connection = await amqplib.connect(this.URI);
+            this.channel = await (this.connection as any).createChannel() as Channel;
 
-            // Make sure the queue exists
             await this.channel.assertQueue(this.queue, { durable: false });
 
             console.log("Connected to RabbitMQ successfully!");
@@ -27,7 +24,6 @@ export class NotificationClient {
         }
     }
 
-    // Send a message to the queue
     public async sendMessage(message: string) {
         if (!this.channel) {
             console.log("No channel available. Please connect first.");
@@ -45,4 +41,3 @@ export class NotificationClient {
         }
     }
 }
-

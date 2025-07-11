@@ -3,8 +3,10 @@ import { validator, ResponseBuilder } from "../Utils";
 import { DocumentService } from "../Services";
 import { CustomRequest } from "../Interfaces";
 import { createDocumentSchema } from "../Dtos";
+import {NotificationClient} from '../Queue';
 
 const documentService = new DocumentService()
+const notificationClient = new NotificationClient();
 export const uploadDocument = async (req: CustomRequest, res: Response) => {
     let successResponse: ResponseBuilder<string | object>;
     let errorResponse: ResponseBuilder<unknown>;
@@ -18,7 +20,8 @@ export const uploadDocument = async (req: CustomRequest, res: Response) => {
     const doc = await documentService.create({ user: req.user.id, ...req.body });
     
     // create a queue system to verify the document and stimulate a delay for the queue
-    
+
+    await notificationClient.sendMessage(JSON.stringify({ documentId: document._id }));
 
     successResponse = new ResponseBuilder(ResponseBuilder.SUCCESS_MESSAGE, 201, doc);
     return res.status(201).json(successResponse.toJson());

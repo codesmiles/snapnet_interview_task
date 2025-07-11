@@ -1,8 +1,7 @@
-import NotificationClient from '../Config';
+import NotificationClient from './NotificationClient';
 import { DocumentService } from '../Services';
 
 const documentService = new DocumentService();
-
 (async () => {
     await NotificationClient.connect();
 
@@ -25,7 +24,7 @@ const documentService = new DocumentService();
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         const status = Math.random() > 0.5 ? 'VERIFIED' : 'FAILED';
-        await updateDocumentStatus(documentId, status);
+        await documentService.update({_id:documentId}, {status});
 
         channel.ack(msg);
     });

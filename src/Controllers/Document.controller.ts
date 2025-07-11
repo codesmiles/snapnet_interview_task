@@ -6,7 +6,7 @@ import { createDocumentSchema } from "../Dtos";
 import {NotificationClient} from '../Queue';
 
 const documentService = new DocumentService()
-const notificationClient = new NotificationClient();
+const notificationClient = new NotificationClient('verify_document');
 export const uploadDocument = async (req: CustomRequest, res: Response) => {
     let successResponse: ResponseBuilder<string | object>;
     let errorResponse: ResponseBuilder<unknown>;

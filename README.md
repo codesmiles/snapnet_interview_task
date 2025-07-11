@@ -27,6 +27,7 @@ To get started with the project, follow these steps:
 To run the project, use the following command:
 
 ## env
+
 ```sh
 PORT=3006
 EDIS_URL=redis://redis-server:6379

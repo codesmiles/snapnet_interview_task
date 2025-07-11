@@ -7,9 +7,9 @@ export class NotificationClient {
     private URI: string;
     public queue: string;
 
-    constructor() {
+    constructor(queue: string) {
         this.URI = process.env.RABBITMQ_URL as string;
-        this.queue = "messages";
+        this.queue = queue;
     }
 
     // Connect to RabbitMQ server and create a channel
